@@ -1,0 +1,17 @@
+{
+   "content_scripts": [
+     {
+       "js": [ "jquery.js", "inject.js", "dominion.js" ],
+       "matches": [ "https://dominion.goko.com/Dominion/v352/gameClient.html" ]
+     }
+   ],
+   "permissions": [
+     "https://dominion.goko.com/",
+     "http://dominion.goko.com/",
+     "http://dominion-point-counter.appspot.com/"
+   ],
+   "description": "Dominion Goko Point Counter",
+   "name": "Dominion Goko Point Counter",
+   "version": "0.1",
+   "manifest_version": 2
+}
