@@ -291,9 +291,16 @@ function handleLogEntry(text) {
   }
 
   // Handle return to supply.
-  var arr = entry.match(/^returns (.*) to the supply$/);
+  var arr = entry.match(/^returns (.*) to the Supply$/);
   if (arr) {
     player.gainCard(arr[1], -1);
+    return;
+  }
+
+  // Handle points.
+  var arr = entry.match(/^receives ([0-9]*) victory point chips$/);
+  if (arr) {
+    player.changeScore(arr[1]);
     return;
   }
 }

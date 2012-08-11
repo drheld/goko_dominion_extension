@@ -2,7 +2,7 @@
    "content_scripts": [
      {
        "js": [ "jquery.js", "inject.js", "dominion.js" ],
-       "matches": [ "https://dominion.goko.com/Dominion/v352/gameClient.html" ]
+       "matches": [ "https://dominion.goko.com/Dominion/*/gameClient.html" ]
      }
    ],
    "permissions": [
