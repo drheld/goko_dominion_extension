@@ -317,6 +317,16 @@ function handleLogEntry(text) {
     player.changeScore(arr[1]);
     return;
   }
+
+  // Handle Bishop's initial VP token.
+  // This should be reported in the log, but isn't.
+  // See: http://funsockets.ipbhost.com/index.php?/topic/598-bishop-log-reports-wrong-number-of-vp-tokens/
+  // To work around this, special case Bishop.
+  var arr = entry.match(/^plays Bishop$/);
+  if (arr) {
+    player.changeScore(1);
+    return;
+  }
 }
 
 function getDecks() {
