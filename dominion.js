@@ -23,6 +23,8 @@ var myName;
 var send_sequence = 0;
 var receive_sequence = 0;
 
+var last_status_print = 0;
+
 // The version of the extension currently loaded.
 var extension_version = 'Unknown';
 
@@ -232,8 +234,6 @@ function maybeHandleGameStart(text) {
     return false;
   }
 
-  introducePlugin();
-
   started = true;
   disabled = false;
   turn_number = 0;
@@ -249,6 +249,7 @@ function maybeHandleGameStart(text) {
   announced_error = false;
 
   players = new Object();
+  introducePlugin();
 
   return true;
 }
@@ -386,33 +387,34 @@ function delayedRunCommand(command) {
   var command = command + "(" + time + ")";
   var wait_time = 200 * Math.floor(Math.random() * 10 + 1);
   // If we introduced the extension, we get first dibs on answering.
-  if (i_introduced) wait_time = 100;
+  // TODO(drheld): Re-add this.
+  // if (i_introduced) wait_time = 100;
   setTimeout(command, wait_time);
 }
 
-function handleChatText(speaker, text) {
+function handleChatText(text) {
   if (!text) return;
   if (disabled) return;
 
-  if (text == " !status") delayedRunCommand("maybeShowStatus");
-  if (text == " !details") delayedRunCommand("maybeShowDetails");
+  if (text == "!status") delayedRunCommand("maybeShowStatus");
+  if (text == "!details") delayedRunCommand("maybeShowDetails");
 
-  if (getOption("allow_disable") && text == " !disable" && turn_number <= 5) {
-    localStorage.setItem("disabled", "t");
-    disabled = true;
-    hideExtension();
-    writeText(">> Point counter disabled.");
-  }
+//  if (getOption("allow_disable") && text == " !disable" && turn_number <= 5) {
+//    localStorage.setItem("disabled", "t");
+//    disabled = true;
+//    hideExtension();
+//    writeText(">> Point counter disabled.");
+//  }
 
   if (text.indexOf(" >> ") == 0) {
     last_status_print = new Date().getTime();
   }
-  if (!introduced && text.indexOf(" ★ ") == 0) {
-    introduced = true;
-    if (speaker == localStorage["name"]) {
-      i_introduced = true;
-    }
-  }
+  //if (!introduced && text.indexOf(" ★ ") == 0) {
+//    introduced = true;
+ //   if (speaker == localStorage["name"]) {
+//      i_introduced = true;
+//    }
+//  }
 }
 
 function addSetting(setting, output) {
@@ -475,6 +477,9 @@ function handleGameMessage(node) {
       userID = msg.destination;
       gameID = msg.source;
       myName = gmdata.playerInfos[gmdata.playerIndex].name;
+    }
+    if (msgname == 'addChat' || msgname == 'sendChat') {
+      handleChatText(gmdata.text);
     }
   }
   node.remove();
