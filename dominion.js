@@ -2,8 +2,6 @@
 var players = new Object();
 
 var started = false;
-var introduced = false;
-var i_introduced = false;
 var disabled = false;
 var turn_number = 0;
 var player_count = 0;
@@ -17,6 +15,13 @@ var had_error = false;
 var announced_error = false;
 
 var player_re = null;
+
+var userID;
+var gameID;
+var myName;
+
+var send_sequence = 0;
+var receive_sequence = 0;
 
 // The version of the extension currently loaded.
 var extension_version = 'Unknown';
@@ -36,10 +41,6 @@ function handleError(text) {
     had_error = true;
     alert("Point counter error. Results may no longer be accurate: " + text);
   }
-}
-
-function writeText(text) {
-  // TODO(drheld): Implement this.
 }
 
 function maybeAnnounceFailure(text) {
@@ -231,9 +232,9 @@ function maybeHandleGameStart(text) {
     return false;
   }
 
+  introducePlugin();
+
   started = true;
-  introduced = false;
-  i_introduced = false;
   disabled = false;
   turn_number = 0;
   player_count = 0;
@@ -327,16 +328,15 @@ function updateDeck() {
   ignore_events = false;
 }
 
-function maybeIntroducePlugin() {
-  if (!introduced && !disabled) {
-    writeText("★ Cards counted by Dominion Point Counter ★");
-    writeText("http://goo.gl/iDihS (screenshot: http://goo.gl/G9BTQ)");
-    writeText("Type !status to see the current score.");
-    writeText("Type !details to see deck details for each player.");
-    if (getOption("allow_disable")) {
-      writeText("Type !disable by turn 5 to disable the point counter.");
-    }
-  }
+function introducePlugin() {
+  writeText("★ Cards counted by Dominion Point Counter ★");
+  writeText("http://goo.gl/iDihS (screenshot: http://goo.gl/G9BTQ)");
+  writeText("Type !status to see the current score.");
+  writeText("Type !details to see deck details for each player.");
+  // TODO(drheld): Options.
+  //if (getOption("allow_disable")) {
+  //  writeText("Type !disable by turn 5 to disable the point counter.");
+  //}
 }
 
 function maybeShowStatus(request_time) {
@@ -452,24 +452,72 @@ function showState() {
   $('#status').html(html);
 }
 
-function handle(doc) {
+function handle(text) {
   try {
-    if (doc.parentNode && doc.parentNode.id != 'logs') return;
-    handleLogEntry(doc.innerText);
+    handleLogEntry(text);
     if (!started) return;
     showState();
   }
   catch (err) {
     console.log(err);
-    console.log(doc);
-    var error = '';
-    if (doc.innerText != undefined) {
-      error += "On '" + doc.innerText + "': ";
-    }
+    console.log(text);
     handleError("Javascript exception: " + err.stack);
   }
 }
 
+function handleGameMessage(node) {
+  var msg = $.parseJSON(node.text());
+  if (msg.message == 'GameMessage') {
+    var outerdata = msg.data;
+    var msgname = outerdata.messageName;
+    var gmdata = outerdata.data;
+    if (msgname == 'gameSetup') {
+      userID = msg.destination;
+      gameID = msg.source;
+      myName = gmdata.playerInfos[gmdata.playerIndex].name;
+    }
+  }
+  node.remove();
+}
+
+function writeText(text) {
+  // Send to others.
+  var msg = {
+    'message': 'GameMessage',
+    'version': 1,
+    'tag': '',
+    'source': userID,
+    'destination': gameID,
+    'data': {
+      'messageName': 'sendChat',
+      'data': {
+        'text': text
+      }
+    }
+  };
+  var data = JSON.stringify(msg);
+  $('#text_to_send').append(
+      $('<div id=send_msg_' + send_sequence++ + '>').text(data));
+
+  // Send to me.
+  var msg = {
+    'message': 'GameMessage',
+    'version': 1,
+    'tag': '',
+    'source': gameID,
+    'destination': userID,
+    'data': {
+      'messageName': 'addChat',
+      'data': {
+        'playerName': myName,
+        'text': text
+      }
+    }
+  };
+  var data = JSON.stringify(msg);
+  $('#text_to_receive').append(
+      $('<div id=receive_msg_' + receive_sequence++ + '>').text(data));
+}
 
 //
 // Chat status handling.
@@ -490,8 +538,11 @@ $(document).ready(function() {
   $('#status').css('color', 'white');
   $('#status').css('font-family', 'monospace');
 
-  document.body.addEventListener('DOMNodeInserted', function(ev) {
-    handle(ev.target);
+  $('#logs').bind('DOMNodeInserted', function(event) {
+    handle($(event.target).text());
+  });
+  $('#socket_messages').bind('DOMNodeInserted', function(event) {
+    handleGameMessage($(event.target));
   });
 });
 

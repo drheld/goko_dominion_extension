@@ -7,9 +7,6 @@ $(document).ready(function() { var hook = function() {
 
   var sequence = 0;
   var websocket_wrapper;
-  var userID;
-  var gameID;
-  var myName;
 
   // Boilerplate to read websocket traffic and pass through to the extension.
   function hookWebSocket() {
@@ -63,6 +60,20 @@ $(document).ready(function() { var hook = function() {
     this.realAddLog(options);
   };
 
+  // Send / receive events as triggered.
+  $('#text_to_send').bind('DOMNodeInserted', function(event) {
+    var node = $(event.target);
+    console.log(node.text());
+    websocket_wrapper.send(node.text());
+    node.remove();
+  });
+  $('#text_to_receive').bind('DOMNodeInserted', function(event) {
+    var node = $(event.target);
+    console.log(node.text());
+    websocket_wrapper.prototype.onmessage({data:node.text()});
+    node.remove();
+  });
+
   function sendChat(text) {
     // Send to others.
     var msg = {
@@ -97,15 +108,9 @@ $(document).ready(function() { var hook = function() {
       }
     };
     var data = JSON.stringify(msg);
+    console.log(data);
     websocket_wrapper.prototype.onmessage({data: data});
   }
-
-  // Send chat when requested.
-  $('#text_to_send').bind('DOMNodeInserted', function(event) {
-    var node = $('#' + event.target.id);
-    sendChat(node.text());
-    node.remove();
-  });
 }
 
 // Boilerplate to run in page context (important for hooking the websocket).
@@ -119,6 +124,7 @@ var runInPageContext = function(fn) {
 $('body').append($('<div id="logs">').css('display', 'none'));
 $('body').append($('<div id="socket_messages">').css('display', 'none'));
 $('body').append($('<div id="text_to_send">').css('display', 'none'));
+$('body').append($('<div id="text_to_receive">').css('display', 'none'));
 
 runInPageContext(hook);
 
