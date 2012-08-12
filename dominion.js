@@ -454,7 +454,7 @@ function showState() {
 
 function handle(doc) {
   try {
-    if (doc.parentNode.id != 'logs') return;
+    if (doc.parentNode && doc.parentNode.id != 'logs') return;
     handleLogEntry(doc.innerText);
     if (!started) return;
     showState();

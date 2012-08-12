@@ -2,8 +2,12 @@
    "content_scripts": [
      {
        "js": [ "jquery.js", "inject.js", "dominion.js" ],
+       "run_at": "document_start",
        "css": [ "styles.css" ],
-       "matches": [ "https://dominion.goko.com/Dominion/*/gameClient.html" ]
+       "matches": [
+         "http://dominion.goko.com/Dominion/*/gameClient.html",
+         "https://dominion.goko.com/Dominion/*/gameClient.html"
+       ]
      }
    ],
    "permissions": [
