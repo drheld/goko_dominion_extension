@@ -291,7 +291,7 @@ function handleLogEntry(text) {
   // Handle trash.
   var arr = entry.match(/^trashes (.*)$/);
   if (arr) {
-    player.gainCard(arr[1], 1);
+    player.gainCard(arr[1], -1);
     return;
   }
 
