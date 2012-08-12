@@ -2,6 +2,7 @@
    "content_scripts": [
      {
        "js": [ "jquery.js", "inject.js", "dominion.js" ],
+       "css": [ "styles.css" ],
        "matches": [ "https://dominion.goko.com/Dominion/*/gameClient.html" ]
      }
    ],

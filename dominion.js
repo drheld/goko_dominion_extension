@@ -6,6 +6,7 @@ var introduced = false;
 var i_introduced = false;
 var disabled = false;
 var turn_number = 0;
+var player_count = 0;
 
 var show_action_count = false;
 var show_unique_count = false;
@@ -235,6 +236,7 @@ function maybeHandleGameStart(text) {
   i_introduced = false;
   disabled = false;
   turn_number = 0;
+  player_count = 0;
 
   // TODO(drheld): Decide here.
   show_action_count = false;
@@ -254,6 +256,7 @@ function maybeHandlePlayerStart(text) {
   var arr = text.match(/^(.*) - starting cards:/);
   if (!arr || arr.length != 2) return false;
   players[arr[1]] = new Player(arr[1]);
+  players[arr[1]].id = "player" + ++player_count;
 
   var player_names = [];
   for (player in players) {
@@ -433,21 +436,28 @@ function handleGameEnd(doc) {
   // TODO
 }
 
+function playerString(player, text) {
+  return "<span class=" + player.id + ">" + text + "</span>";
+}
+
+function showState() {
+  var html = '';
+  for (player in players) {
+    var player = players[player];
+    var player_string = player.name + '<br>';
+    player_string += 'Cards: ' + player.getDeckString() + '<br>';
+    player_string += 'Score: ' + player.getScore() + '<br>';
+    html += playerString(player, player_string) + '<br>'
+  }
+  $('#status').html(html);
+}
+
 function handle(doc) {
   try {
     if (doc.parentNode.id != 'logs') return;
     handleLogEntry(doc.innerText);
     if (!started) return;
-
-    var html = '<pre>';
-    for (player in players) {
-      html += players[player].name + '\n'
-      html += 'Cards: ' + players[player].getDeckString() + '\n';
-      html += 'Score: ' + players[player].getScore() + '\n';
-      html += '\n';
-    }
-    html += '</pre>';
-    $('#status').html(html);
+    showState();
   }
   catch (err) {
     console.log(err);
@@ -476,7 +486,10 @@ function buildStatusMessage() {
 
 $(document).ready(function() {
   $('body').append('<div id="status"></div>');
+
   $('#status').css('color', 'white');
+  $('#status').css('font-family', 'monospace');
+
   document.body.addEventListener('DOMNodeInserted', function(ev) {
     handle(ev.target);
   });
