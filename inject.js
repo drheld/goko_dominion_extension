@@ -63,54 +63,14 @@ $(document).ready(function() { var hook = function() {
   // Send / receive events as triggered.
   $('#text_to_send').bind('DOMNodeInserted', function(event) {
     var node = $(event.target);
-    console.log(node.text());
     websocket_wrapper.send(node.text());
     node.remove();
   });
   $('#text_to_receive').bind('DOMNodeInserted', function(event) {
     var node = $(event.target);
-    console.log(node.text());
     websocket_wrapper.prototype.onmessage({data:node.text()});
     node.remove();
   });
-
-  function sendChat(text) {
-    // Send to others.
-    var msg = {
-      'message': 'GameMessage',
-      'version': 1,
-      'tag': '',
-      'source': userID,
-      'destination': gameID,
-      'data': {
-        'messageName': 'sendChat',
-        'data': {
-          'text': text
-        }
-      }
-    };
-    var data = JSON.stringify(msg);
-    websocket_wrapper.send(data);
-
-    // Send to me.
-    var msg = {
-      'message': 'GameMessage',
-      'version': 1,
-      'tag': '',
-      'source': gameID,
-      'destination': userID,
-      'data': {
-        'messageName': 'addChat',
-        'data': {
-          'playerName': myName,
-          'text': text
-        }
-      }
-    };
-    var data = JSON.stringify(msg);
-    console.log(data);
-    websocket_wrapper.prototype.onmessage({data: data});
-  }
 }
 
 // Boilerplate to run in page context (important for hooking the websocket).
