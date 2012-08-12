@@ -269,6 +269,11 @@ function maybeHandlePlayerStart(text) {
   return true;
 }
 
+// Get the cards in an action (sometimes there are more than one).
+function getCards(text) {
+  return text.split(', ');
+}
+
 function handleLogEntry(text) {
   if (maybeHandleGameStart(text)) return;
   if (!started) return;
@@ -284,14 +289,18 @@ function handleLogEntry(text) {
   // Handle gain.
   var arr = entry.match(/^gains (.*)$/);
   if (arr) {
-    player.gainCard(arr[1], 1);
+    $.each(getCards(arr[1]), function(i, card) {
+      player.gainCard(card, 1);
+    });
     return;
   }
 
   // Handle trash.
   var arr = entry.match(/^trashes (.*)$/);
   if (arr) {
-    player.gainCard(arr[1], -1);
+    $.each(getCards(arr[1]), function(i, card) {
+      player.gainCard(card, -1);
+    });
     return;
   }
 
@@ -482,7 +491,6 @@ function handleGameMessage(node) {
       handleChatText(gmdata.text);
     }
   }
-  node.remove();
 }
 
 function writeText(text) {
