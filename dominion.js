@@ -501,6 +501,8 @@ function handleGameMessage(node) {
       handleChatText(gmdata.text);
     }
   }
+
+  node.remove();
 }
 
 function writeText(text) {
