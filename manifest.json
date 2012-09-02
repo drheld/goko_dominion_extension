@@ -6,13 +6,17 @@
        "css": [ "styles.css" ],
        "matches": [
          "http://dominion.goko.com/Dominion/*/gameClient.html",
-         "https://dominion.goko.com/Dominion/*/gameClient.html"
+         "https://dominion.goko.com/Dominion/*/gameClient.html",
+         "http://beta.goko.com/Dominion/*/gameClient.html",
+         "https://beta.goko.com/Dominion/*/gameClient.html"
        ]
      }
    ],
    "permissions": [
      "https://dominion.goko.com/",
      "http://dominion.goko.com/",
+     "https://beta.goko.com/",
+     "http://beta.goko.com/",
      "http://dominion-point-counter.appspot.com/"
    ],
    "description": "Dominion Goko Point Counter",

@@ -1,0 +1,15 @@
+Chrome extension to keep track of information during a game of dominion on
+goko / funsockets' dominion game.
+
+The extension keeps track of:
+- # of cards each player has
+- # of points each player has
+- # details about the deck of each player
+
+The extension displays card counts / points to the user.
+
+It also works as chat bot making the information available to other users.
+At the beginning of each game the commands are announced.
+
+
+Will set this up on the Chrome webstore when it's a bit more stable.
