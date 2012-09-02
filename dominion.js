@@ -467,8 +467,16 @@ function showState() {
     var player = players[player];
     var player_string = player.name + '<br>';
     player_string += 'Cards: ' + player.getDeckString() + '<br>';
-    player_string += 'Score: ' + player.getScore() + '<br>';
-    html += playerString(player, player_string) + '<br>'
+    player_string += 'Score: ' + player.getScore() + '<br><br>';
+
+    var card_array = [];
+    for (var c in player.card_counts) {
+      card_array.push(c + ': ' + player.card_counts[c]);
+    }
+    card_array.sort();
+    player_string += card_array.join('<br>') + '<br>';
+
+    html += playerString(player, player_string) + '<br><br>'
   }
   $('#status').html(html);
 }
