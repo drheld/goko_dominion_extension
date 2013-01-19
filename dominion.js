@@ -350,7 +350,7 @@ function updateDeck() {
 
 function introducePlugin() {
   writeText("★ Cards counted by Dominion Point Counter ★");
-  writeText("http://goo.gl/iDihS (screenshot: http://goo.gl/G9BTQ)");
+  //writeText("http://goo.gl/iDihS (screenshot: http://goo.gl/G9BTQ)");
   writeText("Type !status to see the current score.");
   writeText("Type !details to see deck details for each player.");
   // TODO(drheld): Options.
@@ -496,18 +496,21 @@ function handle(text) {
 
 function handleGameMessage(node) {
   var msg = $.parseJSON(node.text());
+  console.log(msg.message);
+  console.log(msg);
   if (msg.message == 'GameMessage') {
-    var outerdata = msg.data;
-    var msgname = outerdata.messageName;
-    var gmdata = outerdata.data;
+    var innerdata = msg.data;
+    var msgname = innerdata.messageName;
+    var gmdata = innerdata.data;
     if (msgname == 'gameSetup') {
       userID = msg.destination;
       gameID = msg.source;
       myName = gmdata.playerInfos[gmdata.playerIndex].name;
     }
-    if (msgname == 'addChat' || msgname == 'sendChat') {
-      handleChatText(gmdata.text);
-    }
+  }
+
+  if (msg.message == 'Chat') {
+    handleChatText(msg.data.text);
   }
 
   node.remove();

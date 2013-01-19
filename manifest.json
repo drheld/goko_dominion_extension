@@ -5,10 +5,10 @@
        "run_at": "document_start",
        "css": [ "styles.css" ],
        "matches": [
-         "http://dominion.goko.com/Dominion/*/gameClient.html",
-         "https://dominion.goko.com/Dominion/*/gameClient.html",
-         "http://beta.goko.com/Dominion/*/gameClient.html",
-         "https://beta.goko.com/Dominion/*/gameClient.html"
+         "http://play.goko.com/Dominion/gameClient.html",
+         "https://play.goko.com/Dominion/gameClient.html",
+         "http://beta.goko.com/Dominion/gameClient.html",
+         "https://beta.goko.com/Dominion/gameClient.html"
        ]
      }
    ],
